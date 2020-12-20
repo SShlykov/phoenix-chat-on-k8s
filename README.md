@@ -94,7 +94,7 @@ PORT=4002 iex --sname c@localhost -S mix phx.server
 
 ##K8s
 ![stage_1](./docs/stage3.png)
-**Напишем prod конфииг**
+**Напишем prod конфиг**
 ```elixir
 #--> config/prod.exs
 db_url          = System.get_env("DB_URL") || "ecto://postgres:postgres@localhost/chat_lv_dev"
@@ -114,6 +114,15 @@ config :chat_lv, ChatLv.Repo,
   url: db_url,
   pool_size: 10
 ```
+**Добавим тест репозитория**
+```elixir
+#--> lib/chat_lv_web/controllers/page_controller.ex
+repo_test_result = inspect(ChatLv.Repo.query("Select 1 as test"))
+#--> lib/chat_lv_web/templates/layout/app.html.eex
+<span style="color: grey; font-size: 10px">repo_test: <span style="color: gray;"> <%= @repo_test_result %></span></span>
+```
+
+
 **Напишем докер файл**
 
 ```dockerfile
@@ -133,15 +142,6 @@ RUN mix local.hex --force && \
 
 CMD ["mix", "phx.server"]
 ```
-
-**Запустим 2 окна в докере, и проверим работу** 
-
-```bash
-docker build -t chat:latest .
-docker run --rm --name chat -p 4000:4000 -e PORT=4000 -it chat:latest sh
-#--> Запустим в различных окнах и пообщаемся (проверим, что работает)
-```
-
 **Изменим стратегию соездинения приложений, теперь они будут общаться через DNS куба**
 
 ```elixir
@@ -159,6 +159,13 @@ topologies = [
 ]
 #--> это необходимо для определения пространства имен сервисов
 ```
+
+**Создадим образ** 
+
+```bash
+docker build -t chat:latest .
+```
+
 
 **Запустим миникуб**
 ```bash
@@ -187,17 +194,19 @@ minikube cache add chat:latest
 
 **Запустим куб**
 ```bash
-kubectl create -f database.yaml
-kubectl create -f k8s.yaml
+kubectl create --save-config -f database.yaml
 #--> посмотрим, как поднимается наш кластер
 minikube dashboard
+#--> контейнер будет скачиваться и запускаться какое-то время
 #--> после того, как мы увидели, что все запустилось
+#--> в другой консоли 
+kubectl create --save-config -f service.yaml
+#--> можно зайти в лог пода (нажимаем на под с именем chat, справа сверху лог)
 #--> (откроем в браузере)
 #--> посмотрим еще и на namespaces
-#--> в другой консоли 
-#--> необходимо установить dnsutils (sudo apt install dnsutils)
-nslookup chat-nodes
-#--> посмотрим на ingress (он запускается не сразу)
+#--> Все работает, подключимся к сервису балансировщику, чтоы увидеть, что все работает локально
+minikube service chat
+#--> Теперь посмотрим на ingress (он запускается не сразу)
 kubectl get ingress -n default
 #--> запишем адреса в /etc/hosts
 sudo vim /etc/hosts
@@ -211,10 +220,14 @@ sudo vim /etc/hosts
 **Скейлим наш деплоймент**
 ```bash
 #--> Предпочтительно изменить конфиг (добавить реплик до 10) и сделать apply
-kubectl apply -f k8s.yaml
+kubectl apply -f service.yaml
 #--> kubectl scale --replicas=8 {{deployment}} 
-#--> kubectl get pods
-#--> kubectl exec -it {{pod}} sh
-#--> iex -S mix
-#--> 
+#--> Обновляем страницу, видим, что кластер действительно вырос
+```
+
+**Удаляем данные**
+```bash
+minikube cache delete chat:latest
+minikube delete
+docker image rm chat
 ```

@@ -4,7 +4,8 @@
 def index(conn, _params) do
     nodes = inspect(Node.list([:this, :visible]))
     node = node()
-    render conn, "index.html", %{nodes: nodes, node: node}
+    repo_test_result = inspect(ChatLv.Repo.query("Select 1 as test"))
+    render(conn, "index.html", %{nodes: nodes, node: node, repo_test_result: repo_test_result})
 end
 ```
 **Создадим шаблон страницы и общую тему**
@@ -18,8 +19,9 @@ end
     <div class="container d-flex justify-content-center align-items-center ">
         <a class="navbar-brand" href="#">Phoenix Chat</a>
         <div style="padding: 13px; display: flex; flex-direction: column;">
-        <span style="color: grey; font-size: 10px">self:  <span style="color: green;"> <%= @node %></span></span>
-        <span style="color: grey; font-size: 10px">nodes: <span style="color: red;"> <%= @nodes %></span></span>
+          <span style="color: gray; font-size: 10px">self:  <span style="color: green;"> <%= @node %></span></span>
+          <span style="color: gray; font-size: 10px">nodes: <span style="color: red;"> <%= @nodes %></span></span>
+          <span style="color: gray; font-size: 10px">repo_test: <span style="color: gray;"> <%= @repo_test_result %></span></span>
         </div>
     </div>
     </div>
