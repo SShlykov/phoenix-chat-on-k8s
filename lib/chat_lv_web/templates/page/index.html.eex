@@ -1,0 +1,5 @@
+<div class="messages-container" id="messages-container">
+    <div id="messages" class="container">
+
+    </div>
+</div>

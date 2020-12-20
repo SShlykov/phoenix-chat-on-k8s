@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ChatLv</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    <script defer type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+  </head>
+  <body>
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container d-flex justify-content-center align-items-center ">
+            <a class="navbar-brand" href="#">Chat</a>
+            <div style="padding: 13px; display: flex; flex-direction: column;">
+            <!--
+              <span style="color: grey; font-size: 10px">self:  <span style="color: green;"></span></span>
+              <span style="color: grey; font-size: 10px">nodes: <span style="color: red;"></span></span>
+            -->
+            </div>
+        </div>
+        </div>
+    </div>
+    <main role="main" class="container">
+      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+      <%= @inner_content %>
+    </main>
+    <div id="footer">
+      <div class="container">
+          <div class="row">
+            <div class="col-sm-2">
+                <div class="input-group">
+                <span class="input-group-addon">@</span>
+                <input id="username" type="text" class="form-control" placeholder="username">
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <input id="message-input" class="form-control" />
+            </div>
+          </div>
+      </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  </body>
+</html>
