@@ -1,32 +1,27 @@
 defmodule ChatLv.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
   @moduledoc false
 
   use Application
 
   def start(_type, _args) do
-    children = [
-      # Start the Ecto repository
-      ChatLv.Repo,
-      # Start the Telemetry supervisor
-      ChatLvWeb.Telemetry,
-      # Start the PubSub system
-      {Phoenix.PubSub, name: ChatLv.PubSub},
-      # Start the Endpoint (http/https)
-      ChatLvWeb.Endpoint
-      # Start a worker by calling: ChatLv.Worker.start_link(arg)
-      # {ChatLv.Worker, arg}
+    topologies = [
+      chat: [
+        strategy: Cluster.Strategy.Gossip,
+      ]
     ]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
+    children = [
+      ChatLv.Repo,
+      ChatLvWeb.Telemetry,
+      {Phoenix.PubSub, name: ChatLv.PubSub},
+      ChatLvWeb.Endpoint,
+      {Cluster.Supervisor, [topologies, [name: ChatLv.ClusterSupervisor]]},
+    ]
+
     opts = [strategy: :one_for_one, name: ChatLv.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
-  # Tell Phoenix to update the endpoint configuration
-  # whenever the application is updated.
   def config_change(changed, _new, removed) do
     ChatLvWeb.Endpoint.config_change(changed, removed)
     :ok

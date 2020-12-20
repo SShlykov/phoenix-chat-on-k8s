@@ -1,12 +1,10 @@
 use Mix.Config
 
-# Configure your database
+db_url          = System.get_env("DB_URL") || "ecto://postgres:postgres@localhost/chat_lv_dev"
+port            = System.get_env("PORT") || 4000
+
 config :chat_lv, ChatLv.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "chat_lv_dev",
-  hostname: "localhost",
-  show_sensitive_data_on_connection_error: true,
+  url: db_url,
   pool_size: 10
 
 # For development, we disable any cache and enable
@@ -16,7 +14,7 @@ config :chat_lv, ChatLv.Repo,
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
 config :chat_lv, ChatLvWeb.Endpoint,
-  http: [port: 4000],
+  http: [port: port],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
