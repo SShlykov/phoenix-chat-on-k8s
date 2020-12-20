@@ -14,10 +14,9 @@
         <div class="container d-flex justify-content-center align-items-center ">
             <a class="navbar-brand" href="#">Chat</a>
             <div style="padding: 13px; display: flex; flex-direction: column;">
-            <!--
-              <span style="color: grey; font-size: 10px">self:  <span style="color: green;"></span></span>
-              <span style="color: grey; font-size: 10px">nodes: <span style="color: red;"></span></span>
-            -->
+              <span style="color: grey; font-size: 10px">self:  <span style="color: green;"> <%= @node %></span></span>
+              <span style="color: grey; font-size: 10px">nodes: <span style="color: red;"> <%= @nodes %></span></span>
+              <span style="color: grey; font-size: 10px">repo_test: <span style="color: gray;"> <%= @repo_test_result %></span></span>
             </div>
         </div>
         </div>
