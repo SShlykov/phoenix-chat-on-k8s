@@ -9,7 +9,7 @@ metadata:
   name: chat
   namespace: default
 spec:
-  replicas: 4
+  replicas: 8
   selector:
     matchLabels:
       app: chat
@@ -41,6 +41,10 @@ spec:
           value: "4000"
         - name: PHOENIX_CHAT_HOST
           value: "localhost.com"
+        - name: DB_URL
+          value: ecto://postgres:postgres@db/chat_lv_prod
+        - name: SECRET_KEY_BASE
+          value: "super-secret-key-base-super-secret-key-base"
         - name: MY_POD_IP
           valueFrom:
             fieldRef:
